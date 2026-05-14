@@ -1,0 +1,13 @@
+2026-05-14 04:59:06,380 [INFO] kronos_server starting on 0.0.0.0:18000 device=cuda:0
+2026-05-14 04:59:06,381 [INFO] loading Kronos tokenizer + base model...
+2026-05-14 04:59:06,397 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:18000
+ * Running on http://192.168.1.96:18000
+2026-05-14 04:59:06,397 [INFO] [33mPress CTRL+C to quit[0m
+2026-05-14 04:59:08,573 [INFO] Application startup complete. (load took 2.2s)
+2026-05-14 04:59:09,774 [INFO] 127.0.0.1 - - [14/May/2026 04:59:09] "GET /health HTTP/1.1" 200 -
+2026-05-14 04:59:09,820 [INFO] 127.0.0.1 - - [14/May/2026 04:59:09] "GET /health HTTP/1.1" 200 -
+2026-05-14 04:59:09,864 [INFO] 127.0.0.1 - - [14/May/2026 04:59:09] "GET / HTTP/1.1" 200 -
+2026-05-14 05:00:15,208 [INFO] 127.0.0.1 - - [14/May/2026 05:00:15] "GET /health HTTP/1.1" 200 -
+2026-05-14 05:00:16,442 [INFO] 127.0.0.1 - - [14/May/2026 05:00:16] "POST /forecast HTTP/1.1" 200 -

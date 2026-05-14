@@ -14,23 +14,26 @@ echo "[start_server] $(date -u +'%FT%TZ') starting"
 # Vast workers usually have /workspace pre-mounted
 cd /workspace
 
-# 1. Fetch the Kronos model source (small Python package, public repo)
-if [ ! -d /workspace/kronos_src ]; then
-    git clone --depth 1 https://github.com/NeoQuasar/Kronos.git /workspace/kronos_src
+# 1. Pull our worker code (this repo) - contains the Kronos `model/` Python package
+#    bundled as `kronos_model/`, plus the Flask server, PyWorker, and start script.
+WORKER_DIR="${PYWORKER_DIR:-/workspace/pyworker}"
+WORKER_REPO="${PYWORKER_REPO:-https://github.com/fernando-spotbo/kronos-vast-worker.git}"
+if [ ! -f "$WORKER_DIR/kronos_server.py" ]; then
+    git clone --depth 1 "$WORKER_REPO" "$WORKER_DIR" || { echo "clone $WORKER_REPO failed"; exit 1; }
 fi
 
-# 2. Install deps. Most are already in the pytorch image; this is fast.
+# 2. The Kronos `model` python package lives inside our repo under `kronos_model/`.
+#    Make it importable as `model` by symlinking.
+if [ -d "$WORKER_DIR/kronos_model" ] && [ ! -e /workspace/kronos_src ]; then
+    mkdir -p /workspace/kronos_src
+    ln -sf "$WORKER_DIR/kronos_model" /workspace/kronos_src/model
+fi
+
+# 3. Install Python deps. Most are already in the pytorch image; this is fast.
 pip install --quiet --no-cache-dir \
     pandas einops 'huggingface_hub==0.33.1' safetensors flask requests vastai \
     || { echo "pip install failed"; exit 1; }
 
-# 3. Pull our worker code (this repo) — already cloned by vast's PYWORKER_REPO
-WORKER_DIR="${PYWORKER_DIR:-/workspace/pyworker}"
-if [ ! -f "$WORKER_DIR/kronos_server.py" ]; then
-    # fall back: clone ourselves if vast didn't
-    git clone --depth 1 "${PYWORKER_REPO:-https://github.com/fernandoagad/kronos-vast-worker.git}" \
-        "$WORKER_DIR"
-fi
 cd "$WORKER_DIR"
 
 # 4. Pre-warm the Kronos model cache while server starts (saves first-call latency)
